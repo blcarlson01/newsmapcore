@@ -69,7 +69,7 @@ public class ExtractWords {
 			article.nextLine();
 		}
 		
-		output = article.nextLine();
+		output = new String(article.nextLine());
 		article.close();
 		file.close();
 		return output;
