@@ -1,14 +1,9 @@
 package summarization;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 
-import net.sf.classifier4J.summariser.*;
-import net.sf.classifier4J.DefaultTokenizer;
+import net.sf.classifier4J.summariser.SimpleSummariser;
 
-import static utilities.ExtractWords.readFile;
-import static utilities.ExtractWords.articleToArray;
 import static utilities.ExtractWords.returnLine;
 
 public class Summarize {
