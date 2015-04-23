@@ -14,6 +14,11 @@ public class Summarize {
 		
 	}
 	
+	/*
+	 * Takes an article and removes the reuters info line and the author line, 
+	 * then passes it through the SimpleSummariser for summary. numSentences is 
+	 * the number of sentences the summary should be. 
+	 */
 	public static String summarizeClean(String path, int numSentences) throws IOException {
 		String article = returnLine(path, 10);
 		int dashIdx = 2 + article.indexOf('-');
@@ -24,6 +29,9 @@ public class Summarize {
 		return summary.summarise(article, numSentences);
 	}
 	
+	/*
+	 * Same as summarizeClean(), but doesn't edit the article
+	 */
 	public static String summarizeDirty(String path, int numSentences) throws IOException {
 		String article = returnLine(path, 10);
 		

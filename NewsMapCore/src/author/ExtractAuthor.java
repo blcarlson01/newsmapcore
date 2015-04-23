@@ -22,6 +22,11 @@ public class ExtractAuthor {
 		*/
 	}
 	
+	/*
+	 * Parses the last line of the article and returns an ArrayList<String>
+	 * where each element is a string starting with worker type (Reporter, Editor, etc.)
+	 * and a list of that worker type
+	 */
 	public static ArrayList<String> findAuthor(String path) throws IOException {
 		String article = returnLine(path, 10);
 		int parenIdx = article.lastIndexOf('(');
@@ -35,6 +40,13 @@ public class ExtractAuthor {
 		return output;
 	}
 	
+	/*
+	 * Parses the last line using findAuthor() and outputs a raw ArrayList<String> 
+	 * of names 
+	 * 
+	 * TODO: Make it work properly when multiple workers of the same type work on 
+	 * an article
+	 */
 	public static ArrayList<String> findAuthorNames(String path) throws IOException {
 		ArrayList<String> authors = findAuthor(path);
 		ArrayList<String> output = new ArrayList<String>();

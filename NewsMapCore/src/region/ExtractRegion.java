@@ -17,6 +17,10 @@ public class ExtractRegion {
 		
 	}
 	
+	/*
+	 * Returns the first mentioned location name of the input article
+	 * e.g. "ROME (Reuters) - [Article text]" as input returns "Rome"
+	 */
 	public static String getMainRegion(String inputFile) throws IOException {
 		String article = returnLine(inputFile, 10);
 		int end = article.indexOf('(') - 1;
