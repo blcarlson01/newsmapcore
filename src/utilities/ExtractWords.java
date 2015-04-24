@@ -26,6 +26,8 @@ public class ExtractWords {
 	 * findProperNouns takes a text document as input and outputs
 	 * an ArrayList<String> containing all words starting with a 
 	 * capital letter
+	 * 
+	 * (not used)
 	 */
 	public static ArrayList<String> findProperNouns(String inputFile) throws IOException {
 		ArrayList<String> output = new ArrayList<String>();
@@ -40,6 +42,12 @@ public class ExtractWords {
 		return output;
 	}
 	
+	/*
+	 * Reads in every word from a text document and places them in 
+	 * an ArrayList<String>
+	 * 
+	 * (not used)
+	 */
 	public static ArrayList<String> articleToArray(String inputFile) throws IOException {
 		FileReader file = new FileReader(inputFile);
 		Scanner article = new Scanner(file);
@@ -54,12 +62,12 @@ public class ExtractWords {
 		file.close();
 		return output;
 	}
-	
-	public static String readFile(String path, Charset encoding) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return new String(encoded, encoding);
-	}
 
+	/*
+	 * Returns a specific line of a document as a single string. Useful as
+	 * for most of the text data, the article contents are kept on line 10 within
+	 * the .txt file
+	 */
 	public static String returnLine(String inputFile, int lineNum) throws IOException {
 		String output;
 		FileReader file = new FileReader(inputFile);
