@@ -1,7 +1,7 @@
-NewsMapCore/bin/
+/bin/
 
-NewsMapCore/target/
+/target/
 
-NewsMapCore/.classpath
+/.classpath
 
-NewsMapCore/.project
+/.project

@@ -13,7 +13,7 @@ public class ExtractRegion {
 		String[] files = file.list();
 		
 		String out = getMainRegion("testDocs/" + files[7]);
-		//System.out.println(out);
+		System.out.println(out);
 		
 	}
 	
