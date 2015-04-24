@@ -15,6 +15,7 @@ public class ExtractAuthor {
 		String[] files = file.list();
 
 		ArrayList<String> out = findAuthorNames("testDocs/" + files[1]);
+		System.out.println(out.get(0));
 		/*
 		for (int i = 0; i < out.size(); i++) {
 			System.out.println(out.get(i));
