@@ -14,8 +14,8 @@ public class ExtractAuthor {
 		File file = new File("testDocs/");
 		String[] files = file.list();
 
-		ArrayList<String> out = findAuthorNames("testDocs/" + files[1]);
-		System.out.println(out.get(0));
+
+		//System.out.println(getAuthor("testDocs/" + files[0]));
 		/*
 		for (int i = 0; i < out.size(); i++) {
 			System.out.println(out.get(i));
@@ -31,6 +31,8 @@ public class ExtractAuthor {
 	public static ArrayList<String> findAuthor(String path) throws IOException {
 		String article = returnLine(path, 10);
 		int parenIdx = article.lastIndexOf('(');
+		if (article.length() == 0)
+			article = "n/a";
 		article = article.substring(parenIdx + 1, article.length() - 1);
 		String[] creators = article.split(";");
 		ArrayList<String> output = new ArrayList<String>(Arrays.asList(creators));
@@ -63,6 +65,17 @@ public class ExtractAuthor {
 		}
 
 		return output;
+	}
+	
+	public static String getAuthor(String inputFile) throws IOException {
+		if (inputFile.contains("/."))
+			return "n/a";
+		String author = returnLine(inputFile, 6);
+		if (!author.equals(""))
+			return author;
+		else {
+			return findAuthor(inputFile).get(0);
+		}
 	}
 
 }

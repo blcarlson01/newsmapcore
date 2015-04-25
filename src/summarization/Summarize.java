@@ -21,9 +21,18 @@ public class Summarize {
 	 */
 	public static String summarizeClean(String path, int numSentences) throws IOException {
 		String article = returnLine(path, 10);
+		if (article.equals(""))
+			return "n/a";
 		int dashIdx = 2 + article.indexOf('-');
 		int parenIdx = article.lastIndexOf('(');
-		article = article.substring(dashIdx,  parenIdx - 1);
+		if (dashIdx == -1 || parenIdx == -1)
+			return summarizeDirty(path, numSentences);
+		try {
+			article = article.substring(dashIdx,  parenIdx - 1);
+		}
+		catch (java.lang.StringIndexOutOfBoundsException e) {
+			return summarizeDirty(path, numSentences);
+		}
 		
 		SimpleSummariser summary = new SimpleSummariser();
 		return summary.summarise(article, numSentences);
