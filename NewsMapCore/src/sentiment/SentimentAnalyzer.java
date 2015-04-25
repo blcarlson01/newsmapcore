@@ -1,9 +1,11 @@
 package sentiment;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,6 @@ import edu.stanford.nlp.util.CoreMap;
 public class SentimentAnalyzer {
 
 	public static List<Sentiment> findSentiment(String line) {
-
 		Properties props = new Properties();
 		props.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
 		StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
@@ -45,33 +46,95 @@ public class SentimentAnalyzer {
 				Tree tree = sentence
 						.get(SentimentCoreAnnotations.AnnotatedTree.class);
 				int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
-				String partText = sentence.toString();
 
 				// String[] sentimentText = { "Very Negative","Negative",
 				// "Neutral", "Positive", "Very Positive"};
 				// System.out.println(partText + " = "+ sentimentText[sentiment]
 				// + " length: "+ partText.length());
 
-				sentimentList.add(new Sentiment(sentiment, partText.length(),
+				sentimentList.add(new Sentiment(sentiment, sentence.toString().length(),
 						sentence.toString()));
 			}
 		}
 
 		return sentimentList;
-
+	}
+	
+	private static void writeToTextFileList(String extfileName, String articleFileName)
+	{
+		final String path = "/Users/Shared/CrawlerData/sentiment/";		
+		String fileName = path + extfileName+ ".txt";		
+		try {
+			final File file = new File(fileName);			
+			if (file.exists()) {					
+				// Add to File
+				addToProcessedFile(file, articleFileName);				
+			} else {
+				// Create File
+				file.createNewFile();
+				addToProcessedFile(file, articleFileName);
+			}			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static void addToProcessedFile(File file, String articleFileName)
+	{
+	// Append to file
+	FileWriter fileWritter;
+	try {
+		fileWritter = new FileWriter(file, true);
+		BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+		bufferWritter.write(articleFileName);
+		bufferWritter.newLine();
+		bufferWritter.flush();
+		bufferWritter.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	}
+	
+	@SuppressWarnings("resource")
+	private static List<String> processedTextFiles()
+	{
+		List<String> files = new ArrayList<String>();
+		final String path = "/Users/Shared/CrawlerData/sentiment/";		
+		String fileName = path + "processedFiles.txt";	
+		try {
+		File textFile = new File(fileName);
+		if(textFile.exists())
+		{
+		FileReader fr = new FileReader(textFile);		
+		BufferedReader br = new BufferedReader(fr);
+		String line;
+		while ((line = br.readLine()) != null) {
+			files.add(line);
+		}
+		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return files;
 	}
 	
 	@SuppressWarnings("resource")
 	private static List<Article> loadTextFiles(String path)
 	{
-		int xx = 0;
+		//int xx = 0;
 		final File folder = new File(path);
-		List<Article> articles = new ArrayList<Article>();		
+		List<Article> articles = new ArrayList<Article>();
+		List<String> processedFiles = processedTextFiles();
 		try {
 			List<List<String>> files = new ArrayList<List<String>>();
 			List<String> fileContents = new ArrayList<String>();
 			for (final File fileEntry : folder.listFiles()) {
-				if (fileEntry.getName().endsWith("txt")) {
+				if (fileEntry.getName().endsWith("txt") 
+						&& !processedFiles.contains(fileEntry.getName())) {
 					File textFile = new File(path + fileEntry.getName());
 					FileReader fr = new FileReader(textFile);
 					BufferedReader br = new BufferedReader(fr);
@@ -83,10 +146,13 @@ public class SentimentAnalyzer {
 
 					files.add(fileContents);
 					fileContents = new ArrayList<String>();
-					if (xx == 0) {
+					writeToTextFileList("processedFiles", textFile.getName());
+					/*
+					if (xx == 1) {
 						break;
 					}
 					xx++;
+					*/
 				}
 			}
 						
@@ -104,7 +170,17 @@ public class SentimentAnalyzer {
 				article.setImagePath(contents.get(8));
 				article.setLocation(contents.get(9));
 				article.setBody(contents.get(10));
-				articles.add(article);
+				
+				if(article.getBody().length() <= 0)
+				{
+					// Don't process empty body files
+					// Mark them in processed, but also mark them in a separate file for review
+					writeToTextFileList("emptyBodyIds", article.getArticleId());
+				}
+				else
+				{
+					articles.add(article);	
+				}				
 			}
 
 		} catch (FileNotFoundException e) {
@@ -126,6 +202,11 @@ public class SentimentAnalyzer {
 		String path = "/Users/Shared/CrawlerData/text/";				
 		List<Article> articles = loadTextFiles(path);
 		JsonArray articleInfoList = new JsonArray();	
+		
+		//TODO: comeback and clean up
+		int jsonFileNameNumber = 0;
+		int numberOfJsonArticlesPerFile = 1000;
+		int outputToSmallerFilesCount = 0;
 		for (int i = 0; i < articles.size(); i++) {
 			Article article = articles.get(i);
 			JsonObject articleInfo = new JsonObject();
@@ -135,6 +216,7 @@ public class SentimentAnalyzer {
 			int longestScore = 0;
 			int longest = 0;
 			JsonArray sentences = new JsonArray();
+						
 			for (Sentiment sentiment : sentiments) 
 			{				
 				JsonObject sentence = new JsonObject();
@@ -166,13 +248,29 @@ public class SentimentAnalyzer {
 			articleInfo.addProperty("descriptionScore", 0);
 			articleInfo.add("sentences", sentences);			
 			articleInfoList.add(articleInfo);
+			
+			if(outputToSmallerFilesCount == numberOfJsonArticlesPerFile)
+			{
+				writeToTextFileList("json"+ jsonFileNameNumber, gson.toJson(articleInfoList));
+				articleInfoList = new JsonArray();	
+				outputToSmallerFilesCount = 0;
+				jsonFileNameNumber++;
+			}
+			
+			outputToSmallerFilesCount++;
+			System.out.println("Completed - FileName: " + article.getArticleId());
+			System.out.println("");
 		}
-					
-		System.out.println(gson.toJson(articleInfoList));
+		
+		if(articleInfoList.size() > 0)
+		{
+		writeToTextFileList("json"+ jsonFileNameNumber, gson.toJson(articleInfoList));
+		//System.out.println(gson.toJson(articleInfoList));
+		}
 		
 		stopWatch.stop();
 		System.out.println("Total Files: "+ articles.size());
-	    System.out.println("Time to Complete (Minutes): "+TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));
+	    System.out.println("Time to Complete (Minutes): "+TimeUnit.MILLISECONDS.toMinutes(stopWatch.getTime()));
 	}
 
 }
