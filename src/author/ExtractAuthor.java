@@ -1,6 +1,5 @@
 package author;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,8 +10,8 @@ public class ExtractAuthor {
 
 	// debug
 	public static void main(String[] args) throws IOException {
-		File file = new File("testDocs/");
-		String[] files = file.list();
+		//File file = new File("testDocs/");
+		//String[] files = file.list();
 
 
 		//System.out.println(getAuthor("testDocs/" + files[0]));

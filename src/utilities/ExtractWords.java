@@ -3,9 +3,6 @@ package utilities;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -64,9 +61,7 @@ public class ExtractWords {
 	}
 
 	/*
-	 * Returns a specific line of a document as a single string. Useful as
-	 * for most of the text data, the article contents are kept on line 10 within
-	 * the .txt file
+	 * Returns a specific line of a document as a single string.
 	 */
 	public static String returnLine(String inputFile, int lineNum) throws IOException {
 		String output;

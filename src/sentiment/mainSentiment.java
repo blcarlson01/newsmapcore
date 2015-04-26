@@ -46,7 +46,7 @@ public class mainSentiment {
 	 */
 	public static void sentiment(String path) throws IOException {
 		Properties props = new Properties();
-		props.setProperty("annotators",  "tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment");
+		props.setProperty("annotators",  "tokenize, ssplit, parse, sentiment");
 		StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 	
 		// TODO: turn this into method in utils
@@ -59,22 +59,7 @@ public class mainSentiment {
 		Annotation document = new Annotation(article);
 		
 		pipeline.annotate(document);
-		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
-		
-		for (CoreMap sentence: sentences) {
-			for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
-				String word = token.get(TextAnnotation.class);
-				String pos = token.get(PartOfSpeechAnnotation.class);
-				String ne = token.get(NamedEntityTagAnnotation.class);
-			}
-			
-			Tree tree = sentence.get(TreeAnnotation.class);
-			
-			SemanticGraph dependencies = sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);
-		}
-		
-		Map<Integer, CorefChain> graph = document.get(CorefChainAnnotation.class);
-		
+	
 		int totalSentiment = 0;
 		int count = 0;
 		Annotation annotation = pipeline.process(article);

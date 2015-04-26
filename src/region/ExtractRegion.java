@@ -24,12 +24,10 @@ public class ExtractRegion {
 	public static String getMainRegion(String inputFile) throws IOException {
 		String article = returnLine(inputFile, 10);
 		int end = article.indexOf('(') - 1;
-		if (end == -1)
+		if (end <= 0)
 			return "n/a";
-		String output = article.substring(0, 1);
-		output += article.substring(1, end).toLowerCase();
-		
-		return output;
+		return article.substring(0, end);
+
 	}
 	
 	public static String getMainRegionAlt(String inputFile) throws IOException { 
@@ -38,8 +36,8 @@ public class ExtractRegion {
 		if (!region.equals(""))
 			output = region;
 		else {
-			output = "n/a";
-					//getMainRegion(inputFile);
+			output = //"n/a";
+					getMainRegion(inputFile);
 		}
 		
 		return output;
