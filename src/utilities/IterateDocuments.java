@@ -20,16 +20,23 @@ public class IterateDocuments {
 		File file = new File("text");
 		String[] files = file.list();
 		FileWriter fw = new FileWriter("output.txt");
-		Map<String, Point2D> cityMap = makeMap("cities.txt");
+		Map<String, Point2D> cityMap = makeMap("cities15000.txt");
+		
+		int emptyArticles = 0;
+		int emptyAuthors = 0;
+		int emptyCoords = 0;
 		
 		System.out.println("Iterating through docs...");
 		for (int i = 0; i < files.length; i++) {
 			if (files[i].charAt(0) == '.') // not an article file
 				continue;
 			
+			
 			String articleText = returnLine("text/" + files[i], 10);
-			if (articleText.length() == 0) // skip if article is empty
+			if (articleText.length() == 0) { // skip if article is empty
+				++ emptyArticles;
 				continue;
+			}
 			
 			String location = getMainRegionAlt("text/" + files[i]);
 			location = location.substring(0, 1) + location.substring(1, location.length()).toLowerCase(); // properly capitalize
@@ -45,8 +52,10 @@ public class IterateDocuments {
 				newStart ++;
 				author = author.substring(newStart + 2,  author.length()).trim();
 			}
-			else
+			else {
+				++ emptyAuthors;
 				continue;
+			}
 			
 			String summary = summarizeClean("text/" + files[i], 1);
 			String url = returnLine("text/" + files[i], 1);
@@ -65,11 +74,13 @@ public class IterateDocuments {
 				lon = longitude.toString();
 			}
 			else {
-				lat = "-1.0";
-				lon = "-1.0";
+				++ emptyCoords;
+				continue;
+				//lat = "-1.0";
+				//lon = "-1.0";
 			}
 			
-			fw.write("{ \"docID\":" + articleID + 
+			/*fw.write("{ \"docID\":" + articleID + 
 					 ",\"url\":\"" + url + 
 					 "\",\"title\":\"" + title + 
 					 "\",\"pubDate\":\"" + publishDate + 
@@ -81,11 +92,15 @@ public class IterateDocuments {
 					 ",\"longitude\":" + lon +
 					 "}\n"
 					 );
+					 */
+			fw.write("TEST\n");
+			fw.flush();
 		
-			//System.out.println((i * 100)/(files.length));
 		}
 		fw.close();
-		System.out.println("Done!");
+		System.out.println("Finished:\n" + emptyArticles + " empty articles"
+				+ "\n" + emptyAuthors + " missing authors"
+				+ "\n" + emptyCoords + " missing coordinates");
 	}
 	
 	public static Map<String, Point2D> makeMap(String path) throws IOException {
@@ -97,11 +112,12 @@ public class IterateDocuments {
 		
 		while (sFile.hasNext()) {
 			String line = sFile.nextLine();
-			String[] brokenLine = line.split(",");
+			String[] brokenLine = line.split("\t");
 			if (output.get(brokenLine[1]) == null) {
+				System.out.println(brokenLine[1]);
 				double lat, lon;
-				lat = Double.parseDouble(brokenLine[5]);
-				lon = Double.parseDouble(brokenLine[6]);
+				lat = Double.parseDouble(brokenLine[4]);
+				lon = Double.parseDouble(brokenLine[5]);
 				Point2D coord = new Point2D.Double(lat, lon);
 				output.put(brokenLine[1], coord);
 			}
