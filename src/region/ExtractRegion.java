@@ -33,13 +33,21 @@ public class ExtractRegion {
 	public static String getMainRegionAlt(String inputFile) throws IOException { 
 		String output;
 		String region = returnLine(inputFile, 9);
-		if (!region.equals(""))
-			output = region;
+		if (!region.equals("")) {
+			if (region.contains(","))
+				output = region.split(",")[0];
+			else if (region.contains("/"))
+				output = region.split("/")[0];
+			else
+				output = region;
+		}
 		else {
-			output = //"n/a";
-					getMainRegion(inputFile);
+			output = getMainRegion(inputFile);
 		}
 		
+		if (output.toLowerCase().equals("new york"))
+			output = "New York City";
+			
 		return output;
 	}
 }
