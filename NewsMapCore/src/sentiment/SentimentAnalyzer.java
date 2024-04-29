@@ -1,5 +1,6 @@
 package sentiment;
 
+import io.github.pixee.security.BoundedLineReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -110,7 +111,7 @@ public class SentimentAnalyzer {
 		FileReader fr = new FileReader(textFile);		
 		BufferedReader br = new BufferedReader(fr);
 		String line;
-		while ((line = br.readLine()) != null) {
+		while ((line = BoundedLineReader.readLine(br, 5_000_000)) != null) {
 			files.add(line);
 		}
 		}
@@ -140,7 +141,7 @@ public class SentimentAnalyzer {
 					BufferedReader br = new BufferedReader(fr);
 					String line;
 					fileContents.add(textFile.getName());
-					while ((line = br.readLine()) != null) {
+					while ((line = BoundedLineReader.readLine(br, 5_000_000)) != null) {
 						fileContents.add(line);
 					}
 
